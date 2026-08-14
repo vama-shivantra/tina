@@ -54,6 +54,16 @@ function parseFrontmatter(content: string) {
   };
 }
 
+function resolveAssetPath(path?: string) {
+  if (!path || /^(https?:)?\/\//.test(path)) return path;
+
+  return (
+    import.meta.env.BASE_URL.replace(/\/$/, "") +
+    "/" +
+    path.replace(/^\//, "")
+  );
+}
+
 export function getPosts(): BlogPost[] {
   return Object.values(posts).map((file) => {
     const { data, body } = parseFrontmatter(
@@ -64,7 +74,7 @@ export function getPosts(): BlogPost[] {
       slug: data.slug as string,
       title: data.title as string,
       excerpt: data.excerpt as string | undefined,
-      coverImage: data.coverImage as string | undefined,
+      coverImage: resolveAssetPath(data.coverImage as string | undefined),
       author: data.author as string | undefined,
       publishedAt: data.publishedAt as string | undefined,
       category: data.category as string | undefined,
